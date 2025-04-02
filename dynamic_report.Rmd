@@ -1,0 +1,54 @@
+---
+title: My dynamic report
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+
+```
+
+```{css}
+body {
+  background-color: lightblue;
+}
+
+h2 {
+  color: maroon;
+  margin-left: 40px;
+} 
+```
+
+## Youtube ads
+
+In this document I am trying to show what makes a YouTube ad skippable. To do this I have used the length of the ad and the timing of when the ad shows up. I have also wanted to find out more about the length of ads on YouTube including how long they usually are and the longest that an ad can be.
+
+```{r}
+library(tidyverse)
+
+latest_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vT79h2TY7Rke0cyT6hXN3IXqUvE0zdSAb9H34G1UrgxkthxNc09zFFal8A3pYDX0Z1LsTtV9UvWliGp/pub?gid=1640473056&single=true&output=csv") %>%
+  rename(skippable = 2,
+         ad_length = 3,
+         ad_timing = 4
+          )   #Creating New data called latest_data and renaming the variables.
+
+mean_ad_length <- latest_data$ad_length %>%
+mean() #Getting the mean ad length
+
+max_ad_length <- latest_data$ad_length %>%
+max() #Getting the length of the longest ad
+
+ggplot(data = latest_data) +
+  geom_bar(aes(x = ad_length, fill = skippable)) +
+labs(title = "Does the length of ad impact whether it is skippable?",
+ x = "Length of ad", y = "Number of ads") #Creating a bar chart to compare if length of ad impacts whether the ad is skippable
+
+ggplot(data = latest_data) +
+  geom_bar(aes(x = ad_timing, fill = factor(skippable)), position = "dodge") +
+  labs(title = "Does the timing of the ad impact whether it is skippable?",
+       x = "Timing of ad", y = "Number of ads", fill = "Skippable") + 
+  theme_minimal() #Creating a bar chart to see if when the ad pops up impacts if the ad is skippable.
+
+paste0(" The mean length of ad was ", mean_ad_length, " for the ads that were a maximum of ", max_ad_length, ".") #Creating a dynamic comment about the mean and longest YouTube ads.
+
+```
